@@ -2,6 +2,7 @@ import os
 import json
 import falcon
 import jinja2
+import asyncio
 import mimetypes
 
 
@@ -61,6 +62,17 @@ class SwaggerUiResource(object):
         resp.text = self.templates.render('index.html', **self.context)
 
 
+class SwaggerUiResource_async(object):
+
+    def __init__(self, templates_folder, default_context):
+        self.templates = TemplateRenderer(templates_folder)
+        self.context = default_context
+
+    async def on_get(self, req, resp):
+        resp.content_type = 'text/html'
+        resp.text = self.templates.render('index.html', **self.context)
+
+
 def register_swaggerui_app(app, swagger_uri, api_url, page_title='Swagger UI', favicon_url=None, config=None, uri_prefix=""):
 
     """:type app: falcon.API"""
@@ -111,7 +123,13 @@ def register_swaggerui_app(app, swagger_uri, api_url, page_title='Swagger UI', f
     if swagger_uri == '/':
         default_context['base_url'] = uri_prefix
 
-    app.add_route(
-        swagger_uri,
-        SwaggerUiResource(templates_folder, default_context)
-    )
+    if isAsync:
+        app.add_route(
+            swagger_uri,
+            SwaggerUiResource_async(templates_folder, default_context)
+        )
+    else:
+        app.add_route(
+            swagger_uri,
+            SwaggerUiResource(templates_folder, default_context)
+        )
