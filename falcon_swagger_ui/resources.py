@@ -73,7 +73,7 @@ class SwaggerUiResource_async(object):
         resp.text = self.templates.render('index.html', **self.context)
 
 
-def register_swaggerui_app(app, swagger_uri, api_url, page_title='Swagger UI', favicon_url=None, config=None, uri_prefix=""):
+def register_swaggerui_app(app, swagger_uri, api_url, page_title='Swagger UI', favicon_url=None, config=None, uri_prefix="", isAsync=False):
 
     """:type app: falcon.API"""
 
